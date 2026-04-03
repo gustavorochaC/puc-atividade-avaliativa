@@ -15,6 +15,10 @@ import { Card, CardContent } from "@/components/ui/card";
 export default function CalendarPage() {
   const { state } = useAppStore();
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const taskDates = state.tasks.map((task) => new Date(task.dueDate));
+  const taskDatesWithVisibleIndicator = taskDates.filter(
+    (date) => !isSameDay(date, selectedDate),
+  );
 
   const tasksForDay = state.tasks.filter((task) =>
     isSameDay(new Date(task.dueDate), selectedDate),
@@ -51,11 +55,11 @@ export default function CalendarPage() {
               onSelect={(date) => setSelectedDate(date ?? new Date())}
               locale={ptBR}
               modifiers={{
-                hasTasks: state.tasks.map((task) => new Date(task.dueDate)),
+                hasTasks: taskDatesWithVisibleIndicator,
               }}
               modifiersClassNames={{
                 hasTasks:
-                  "after:absolute after:bottom-1.5 after:left-1/2 after:size-1.5 after:-translate-x-1/2 after:rounded-full after:bg-primary",
+                  "after:absolute after:bottom-[0px] after:left-1/2 after:size-1.5 after:-translate-x-1/2 after:rounded-full after:bg-primary",
               }}
               className="mx-auto rounded-[28px] border border-border bg-background p-5 [--cell-size:--spacing(8)]"
             />

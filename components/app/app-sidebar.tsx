@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
 import {
   CalendarClock,
   ChevronsUpDown,
@@ -28,7 +27,6 @@ import {
   SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
-  SidebarMenuBadge,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
@@ -69,12 +67,6 @@ function getInitials(name: string) {
 export function AppSidebar() {
   const pathname = usePathname();
   const { currentUser, logout, state } = useAppStore();
-  const [activeProjectId, setActiveProjectId] = useState<string | null>(null);
-  const selectedProjectId =
-    activeProjectId !== null &&
-    state.projects.some((project) => project.id === activeProjectId)
-      ? activeProjectId
-      : null;
 
   if (!currentUser) {
     return null;
@@ -106,15 +98,9 @@ export function AppSidebar() {
             <SidebarMenu>
               {mainNavigation.map((item) => {
                 const Icon = item.icon;
-                const isActive = pathname === item.href;
-                const itemCount =
-                  item.href === "/dashboard"
-                    ? state.projects.length
-                    : item.href === "/projetos"
-                      ? state.projects.length
-                      : item.href === "/kanban"
-                        ? state.tasks.filter((task) => task.status !== "done").length
-                        : state.tasks.length;
+                const isActive =
+                  pathname === item.href ||
+                  (item.href !== "/dashboard" && pathname.startsWith(`${item.href}/`));
 
                 return (
                   <SidebarMenuItem key={item.href}>
@@ -128,7 +114,6 @@ export function AppSidebar() {
                         <span>{item.label}</span>
                       </Link>
                     </SidebarMenuButton>
-                    <SidebarMenuBadge>{itemCount}</SidebarMenuBadge>
                   </SidebarMenuItem>
                 );
               })}
@@ -150,10 +135,7 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               {state.projects.slice(0, 5).map((project) => {
-                const taskCount = state.tasks.filter(
-                  (task) => task.projectId === project.id && task.status !== "done",
-                ).length;
-                const isActiveProject = selectedProjectId === project.id;
+                const isActiveProject = pathname === `/projetos/${project.id}`;
 
                 return (
                   <SidebarMenuItem key={project.id}>
@@ -162,12 +144,11 @@ export function AppSidebar() {
                       tooltip={project.name}
                       isActive={isActiveProject}
                     >
-                      <Link href="/projetos" onClick={() => setActiveProjectId(project.id)}>
+                      <Link href={`/projetos/${project.id}`}>
                         <FolderKanban />
                         <span>{project.name}</span>
                       </Link>
                     </SidebarMenuButton>
-                    <SidebarMenuBadge>{taskCount}</SidebarMenuBadge>
                   </SidebarMenuItem>
                 );
               })}

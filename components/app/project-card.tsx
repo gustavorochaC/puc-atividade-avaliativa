@@ -1,6 +1,8 @@
+import Link from "next/link";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { CalendarRange, CheckCircle2, Layers3, Users2 } from "lucide-react";
+import { CalendarRange, CheckCircle2, ChevronRight, Layers3, Users2 } from "lucide-react";
+import { ProjectDeleteDialog } from "@/components/app/project-delete-dialog";
 import { ProjectFormDialog } from "@/components/app/project-form-dialog";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -28,7 +30,12 @@ export function ProjectCard({ project, tasks, members }: ProjectCardProps) {
   const progress = tasks.length === 0 ? 0 : Math.round((finishedTasks / tasks.length) * 100);
 
   return (
-    <Card className="rounded-[28px] border-border/80 bg-card/95 shadow-sm">
+    <Card className="group relative rounded-[28px] border-border/80 bg-card/95 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-lg">
+      <Link
+        href={`/projetos/${project.id}`}
+        aria-label={`Ver detalhes do projeto ${project.name}`}
+        className="absolute inset-0 z-10 rounded-[28px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2"
+      />
       <CardContent className="space-y-5 p-6">
         <div className="flex items-start justify-between gap-3">
           <div className="space-y-2">
@@ -43,14 +50,24 @@ export function ProjectCard({ project, tasks, members }: ProjectCardProps) {
             </div>
           </div>
 
-          <ProjectFormDialog
-            project={project}
-            trigger={
-              <Button type="button" variant="outline" className="rounded-full">
-                Editar
-              </Button>
-            }
-          />
+          <div className="relative z-20 flex items-center gap-2">
+            <ProjectFormDialog
+              project={project}
+              trigger={
+                <Button type="button" variant="outline" className="rounded-full">
+                  Editar
+                </Button>
+              }
+            />
+            <ProjectDeleteDialog
+              project={project}
+              trigger={
+                <Button type="button" variant="destructive" className="rounded-full">
+                  Excluir
+                </Button>
+              }
+            />
+          </div>
         </div>
 
         <div className="grid gap-3 sm:grid-cols-3">
@@ -109,6 +126,11 @@ export function ProjectCard({ project, tasks, members }: ProjectCardProps) {
               </Avatar>
             ))}
           </div>
+        </div>
+
+        <div className="flex items-center justify-between rounded-2xl bg-secondary/65 px-4 py-3 text-sm font-medium text-foreground">
+          <span>Ver detalhes do projeto</span>
+          <ChevronRight className="size-4 transition-transform duration-200 group-hover:translate-x-1" />
         </div>
       </CardContent>
     </Card>

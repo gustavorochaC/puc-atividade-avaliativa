@@ -37,6 +37,9 @@ type AppContextValue = {
   register: (input: RegisterInput) => ActionResult<User>;
   logout: () => void;
   upsertProject: (input: ProjectInput) => ActionResult<Project>;
+  deleteProject: (
+    projectId: string,
+  ) => ActionResult<{ project: Project; removedTaskCount: number }>;
   upsertTask: (input: TaskInput) => ActionResult<Task>;
   updateTaskStatus: (taskId: string, status: TaskStatus) => void;
   moveTask: (taskId: string, status: TaskStatus, beforeTaskId: string | null) => void;
@@ -212,6 +215,37 @@ export function AppProvider({ children }: PropsWithChildren) {
     };
   };
 
+  const deleteProject = (
+    projectId: string,
+  ): ActionResult<{ project: Project; removedTaskCount: number }> => {
+    const project = state.projects.find((item) => item.id === projectId);
+
+    if (!project) {
+      return {
+        success: false,
+        message: "Projeto nao encontrado.",
+      };
+    }
+
+    const removedTaskCount = state.tasks.filter(
+      (task) => task.projectId === projectId,
+    ).length;
+
+    setState((current) => ({
+      ...current,
+      projects: current.projects.filter((item) => item.id !== projectId),
+      tasks: current.tasks.filter((task) => task.projectId !== projectId),
+    }));
+
+    return {
+      success: true,
+      data: {
+        project,
+        removedTaskCount,
+      },
+    };
+  };
+
   const upsertTask = (input: TaskInput): ActionResult<Task> => {
     const now = new Date().toISOString();
     const previousTask = input.id
@@ -315,6 +349,7 @@ export function AppProvider({ children }: PropsWithChildren) {
         register,
         logout,
         upsertProject,
+        deleteProject,
         upsertTask,
         updateTaskStatus,
         moveTask,

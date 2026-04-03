@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Fragment } from "react";
+import { useAppStore } from "@/components/providers/app-provider";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -23,6 +24,7 @@ const routeLabels: Record<string, string> = {
 
 export function AppBreadcrumbs() {
   const pathname = usePathname();
+  const { state } = useAppStore();
   const segments = pathname.split("/").filter(Boolean);
 
   if (segments.length === 0) {
@@ -41,7 +43,10 @@ export function AppBreadcrumbs() {
         {segments.map((segment, index) => {
           const isLast = index === segments.length - 1;
           const href = `/${segments.slice(0, index + 1).join("/")}`;
-          const label = routeLabels[segment] ?? segment;
+          const label =
+            segments[0] === "projetos" && index === 1
+              ? state.projects.find((project) => project.id === segment)?.name ?? "Detalhes"
+              : routeLabels[segment] ?? segment;
 
           return (
             <Fragment key={href}>

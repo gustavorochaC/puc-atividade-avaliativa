@@ -27,16 +27,9 @@
   <img src="./public/screenshots/dashboard-dark.png" alt="Preview do dashboard em tema escuro" />
 </p>
 
-<table>
-  <tr>
-    <td width="60%">
-      <img src="./public/screenshots/login-light.png" alt="Tela de login do sistema" />
-    </td>
-    <td width="40%">
-      <img src="./public/screenshots/sidebar-brand.png" alt="Identidade visual da navegacao lateral" />
-    </td>
-  </tr>
-</table>
+<p align="center">
+  <img src="./public/screenshots/login-dark.png" alt="Tela de login do sistema em tema escuro" />
+</p>
 
 ## Sobre o Projeto
 

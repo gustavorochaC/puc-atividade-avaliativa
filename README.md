@@ -299,12 +299,6 @@ Melhorias naturais para uma proxima versao:
 - drag and drop no Kanban
 - relatorios e indicadores avancados
 
-## Documentacao Complementar
-
-Para uma explicacao mais detalhada do fluxo do sistema, consulte:
-
-- [DOCUMENTACAO_APP.md](./DOCUMENTACAO_APP.md)
-
 ## Resumo Final
 
 Este repositorio entrega uma base moderna, organizada e funcional para gerenciamento de tarefas, com foco em:

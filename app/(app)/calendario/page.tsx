@@ -33,9 +33,9 @@ export default function CalendarPage() {
         action={<TaskFormDialog />}
       />
 
-      <div className="grid gap-6 xl:grid-cols-[430px_minmax(0,1fr)]">
-        <Card className="rounded-[30px] border-border/80 bg-card/95 shadow-sm">
-          <CardContent className="space-y-5 p-5">
+      <div className="grid gap-6 xl:grid-cols-[430px_minmax(0,1fr)] xl:items-start">
+        <Card className="w-fit max-w-full self-start rounded-[30px] border-border/80 bg-card/95 shadow-sm">
+          <CardContent className="w-fit space-y-5 p-5">
             <div>
               <p className="text-sm font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                 Selecione uma data
@@ -57,7 +57,7 @@ export default function CalendarPage() {
                 hasTasks:
                   "after:absolute after:bottom-1.5 after:left-1/2 after:size-1.5 after:-translate-x-1/2 after:rounded-full after:bg-primary",
               }}
-              className="rounded-[28px] border border-border bg-background p-4"
+              className="mx-auto rounded-[28px] border border-border bg-background p-5 [--cell-size:--spacing(8)]"
             />
           </CardContent>
         </Card>

@@ -39,6 +39,7 @@ type AppContextValue = {
   upsertProject: (input: ProjectInput) => ActionResult<Project>;
   upsertTask: (input: TaskInput) => ActionResult<Task>;
   updateTaskStatus: (taskId: string, status: TaskStatus) => void;
+  moveTask: (taskId: string, status: TaskStatus, beforeTaskId: string | null) => void;
 };
 
 const AppContext = createContext<AppContextValue | null>(null);
@@ -261,6 +262,49 @@ export function AppProvider({ children }: PropsWithChildren) {
     }));
   };
 
+  const moveTask = (taskId: string, status: TaskStatus, beforeTaskId: string | null) => {
+    setState((current) => {
+      const taskToMove = current.tasks.find((task) => task.id === taskId);
+
+      if (!taskToMove) {
+        return current;
+      }
+
+      const remainingTasks = current.tasks.filter((task) => task.id !== taskId);
+      const nextTask = {
+        ...taskToMove,
+        status,
+        completedAt: status === "done" ? taskToMove.completedAt ?? new Date().toISOString() : null,
+      };
+
+      let insertIndex = remainingTasks.length;
+
+      if (beforeTaskId) {
+        const beforeIndex = remainingTasks.findIndex((task) => task.id === beforeTaskId);
+
+        if (beforeIndex >= 0) {
+          insertIndex = beforeIndex;
+        }
+      } else {
+        const lastStatusIndex = remainingTasks.reduce((lastIndex, task, index) => {
+          return task.status === status ? index : lastIndex;
+        }, -1);
+
+        if (lastStatusIndex >= 0) {
+          insertIndex = lastStatusIndex + 1;
+        }
+      }
+
+      const nextTasks = [...remainingTasks];
+      nextTasks.splice(insertIndex, 0, nextTask);
+
+      return {
+        ...current,
+        tasks: nextTasks,
+      };
+    });
+  };
+
   return (
     <AppContext.Provider
       value={{
@@ -273,6 +317,7 @@ export function AppProvider({ children }: PropsWithChildren) {
         upsertProject,
         upsertTask,
         updateTaskStatus,
+        moveTask,
       }}
     >
       <ThemeProvider

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Fragment } from "react";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -43,16 +44,18 @@ export function AppBreadcrumbs() {
           const label = routeLabels[segment] ?? segment;
 
           return (
-            <BreadcrumbItem key={href}>
+            <Fragment key={href}>
               <BreadcrumbSeparator className="hidden md:flex" />
-              {isLast ? (
-                <BreadcrumbPage>{label}</BreadcrumbPage>
-              ) : (
-                <BreadcrumbLink asChild>
-                  <Link href={href}>{label}</Link>
-                </BreadcrumbLink>
-              )}
-            </BreadcrumbItem>
+              <BreadcrumbItem>
+                {isLast ? (
+                  <BreadcrumbPage>{label}</BreadcrumbPage>
+                ) : (
+                  <BreadcrumbLink asChild>
+                    <Link href={href}>{label}</Link>
+                  </BreadcrumbLink>
+                )}
+              </BreadcrumbItem>
+            </Fragment>
           );
         })}
       </BreadcrumbList>

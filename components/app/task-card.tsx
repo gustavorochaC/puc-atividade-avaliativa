@@ -22,6 +22,10 @@ type TaskCardProps = {
   project?: Project;
   assignee?: User;
   showStatusActions?: boolean;
+  draggable?: boolean;
+  isDragging?: boolean;
+  onDragStart?: () => void;
+  onDragEnd?: () => void;
 };
 
 const statusSequence = ["todo", "doing", "done"] as const;
@@ -43,6 +47,10 @@ export function TaskCard({
   project,
   assignee,
   showStatusActions = true,
+  draggable = false,
+  isDragging = false,
+  onDragStart,
+  onDragEnd,
 }: TaskCardProps) {
   const { updateTaskStatus } = useAppStore();
   const taskDate = new Date(task.dueDate);
@@ -52,7 +60,29 @@ export function TaskCard({
   const isOverdue = task.status !== "done" && isPast(taskDate);
 
   return (
-    <Card className="rounded-[26px] border-border/80 bg-card/95 shadow-sm">
+    <Card
+      className={cn(
+        "rounded-[26px] border-border/80 bg-card/95 shadow-sm transition duration-200",
+        draggable && "cursor-grab hover:-translate-y-1 hover:shadow-lg active:cursor-grabbing",
+        isDragging && "scale-[0.985] opacity-45 ring-2 ring-primary/40 shadow-2xl",
+      )}
+      draggable={draggable}
+      aria-grabbed={draggable ? isDragging : undefined}
+      onDragStart={(event) => {
+        if (!draggable) {
+          return;
+        }
+
+        event.dataTransfer.effectAllowed = "move";
+        event.dataTransfer.setData("text/plain", task.id);
+        onDragStart?.();
+      }}
+      onDragEnd={() => {
+        if (draggable) {
+          onDragEnd?.();
+        }
+      }}
+    >
       <CardContent className="space-y-4 p-5">
         <div className="flex items-start justify-between gap-4">
           <div className="space-y-2">

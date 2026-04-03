@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState } from "react";
 import {
   CalendarClock,
   ChevronsUpDown,
@@ -12,6 +13,7 @@ import {
   Plus,
   Sparkles,
 } from "lucide-react";
+import { ModeToggle } from "@/components/app/mode-toggle";
 import { ProjectFormDialog } from "@/components/app/project-form-dialog";
 import { useAppStore } from "@/components/providers/app-provider";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -67,6 +69,12 @@ function getInitials(name: string) {
 export function AppSidebar() {
   const pathname = usePathname();
   const { currentUser, logout, state } = useAppStore();
+  const [activeProjectId, setActiveProjectId] = useState<string | null>(null);
+  const selectedProjectId =
+    activeProjectId !== null &&
+    state.projects.some((project) => project.id === activeProjectId)
+      ? activeProjectId
+      : null;
 
   if (!currentUser) {
     return null;
@@ -145,15 +153,16 @@ export function AppSidebar() {
                 const taskCount = state.tasks.filter(
                   (task) => task.projectId === project.id && task.status !== "done",
                 ).length;
+                const isActiveProject = selectedProjectId === project.id;
 
                 return (
                   <SidebarMenuItem key={project.id}>
                     <SidebarMenuButton
                       asChild
                       tooltip={project.name}
-                      isActive={pathname === "/projetos"}
+                      isActive={isActiveProject}
                     >
-                      <Link href="/projetos">
+                      <Link href="/projetos" onClick={() => setActiveProjectId(project.id)}>
                         <FolderKanban />
                         <span>{project.name}</span>
                       </Link>
@@ -169,6 +178,15 @@ export function AppSidebar() {
 
       <SidebarFooter>
         <SidebarMenu>
+          <SidebarMenuItem>
+            <ModeToggle
+              side="top"
+              buttonVariant="ghost"
+              buttonSize="default"
+              label="Tema"
+              className="w-full justify-start rounded-md px-2 text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground aria-expanded:bg-sidebar-accent aria-expanded:text-sidebar-accent-foreground"
+            />
+          </SidebarMenuItem>
           <SidebarMenuItem>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
